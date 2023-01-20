@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="mdui-theme-html-auto">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Aide Lua 插件库</title>
+    <meta name="author" content="Jesse205" />
+    <meta name="description" content="Aide Lua 插件下载官方页面" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="mask-icon" href="/images/icons/safari-pinned-tab.svg" color="#3F51B5">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#212121" />
+
+    <!-- Vue -->
+    <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+    <!-- MDUI -->
+    <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css" />
+    <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@mdi/font@7.2.96/css/materialdesignicons.min.css" />
+
+    <!-- Jesse205Library -->
+    <link rel="stylesheet" href="/css/jesse205.css" />
+    <script src="/js/jesse205.js"></script>
+
+    <!-- 当前页面 -->
+    <script type="text/javascript" src="js/plugins.js"></script>
+    <link rel="stylesheet" href="css/plugins.css" />
+</head>
+
+<body class="mdui-appbar-with-toolbar mdui-theme-layout-auto">
+    <div id="app">
+        <!-- 标题栏 -->
+        <nav class="mdui-appbar mdui-appbar-fixed" :class="{'mdui-appbar-lifted':!isTop}">
+            <div class="mdui-toolbar" :class="{'mdui-toolbar-lifted':!isTop}">
+                <p class="mdui-typo-title">Aide Lua 插件库</p>
+                <div class="mdui-toolbar-spacer"></div>
+                <template v-if="menus">
+                    <!-- 菜单区域 -->
+                    <template v-for="item in menus" :key="item.title">
+                        <a v-if="item.type=='menu'" :href="item.href"
+                            class="mdui-btn mdui-ripple mdui-hidden-xs-down"
+                            :class="{'mdui-text-color-theme-accent': pathname==item.href }"
+                            :targrt="item.target">{{item.title}}</a>
+                    </template>
+                    <!-- 更多菜单按钮 -->
+                    <div class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-sm-up" mdui-menu="{target: '#menu-more'}"
+                        mdui-tooltip="{'content':'更多选项'}">
+                        <i class="mdui-icon material-icons">more_vert</i>
+                    </div>
+                    <!-- 弹出菜单 -->
+                    <ul class="mdui-menu" id="menu-more">
+                        <div>
+                            <template v-for="item in menus" :key="item.title">
+                                <li v-if="item.type=='menu'" class="mdui-menu-item">
+                                    <a :href="item.href" class="mdui-ripple"
+                                        :class="{'mdui-text-color-theme-accent': pathname==item.href }"
+                                        :targrt="item.target">{{item.title}}</a>
+                                </li>
+                                <li v-else-if="item.type=='divider'" class="mdui-divider"></li>
+                            </template>
+                        </div>
+                    </ul>
+                </template>
+            </div>
+        </nav>
+
+        <div v-if="!isLoaded" class="spinnerParent">
+            <div class="mdui-spinner"></div>
+        </div>
+        <div v-if="plugins" id="plugins"
+            class="mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-3 mdui-row-lg-4 mdui-row-xl-5 mdui-grid-list mdui-m-a-1">
+            <div v-for="item in plugins" class="mdui-col mdui-p-a-1">
+                <div class="mdui-card mdui-card-outlined mdui-hoverable-2 mdui-p-a-1">
+                    <div class="mdui-card-menu">
+                        <span>{{item.size}}</span>
+                    </div>
+                    <div class="mdui-m-a-1">
+                        <div class="cardTitle">{{item.name}}</div>
+                        <div class="mdui-text-color-theme-secondary">v{{item.versionName}} | {{item.updateDate}}</div>
+                    </div>
+                    <div class="mdui-m-a-1">{{item.description || '暂无介绍'}}</div>
+                    <div class="mdui-m-a-1 mdui-text-color-theme-secondary">开发者：{{item.developer}}</div>
+                    <a :href="item.url" class="downloadBtn mdui-btn mdui-btn-icon mdui-ripple mdui-color-theme">
+                        <i class="mdi mdui-icon mdi-download-outline"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        app.mount('#app')
+    </script>
+</body>
+
+</html>

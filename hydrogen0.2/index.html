@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="mdui-theme-html-auto">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="sharename" content="Hydrogen" />
+  <meta name="shareimage" content="images/aidelua_logo.png" />
+  <meta name="description" content="Hydrogen是基于androlua的一个轻量级第三方知乎App" />
+  <meta name="keywords" content="lua|Hydrogen|Hydrogen知乎|氢知乎|Hydrogen官网" />
+  <meta name="author" content="0047ol,Jesse205" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/icons/safari-pinned-tab.svg" color="#3F51B5">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#212121" />
+
+
+  <title>Hydrogen</title>
+  <link rel="icon" sizes="any" mask="" href="favicon.png">
+
+  <!-- Vue -->
+  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <!-- MDUI -->
+  <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css" />
+  <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@mdi/font@7.2.96/css/materialdesignicons.min.css" />
+
+  <!-- Jesse205Library -->
+  <link rel="stylesheet" href="/css/jesse205.css" />
+  <script src="/js/jesse205.js"></script>
+
+  <!-- 当前页面 -->
+  <link rel="stylesheet" href="css/index.css" />
+  <script src="js/index.js"></script>
+</head>
+
+<body class="mdui-theme-layout-auto">
+  <div id="app">
+    <!-- 标题栏 -->
+    <nav class="mdui-appbar mdui-appbar-fixed" :class="{'mdui-appbar-lifted':!isTop}">
+      <div id="toolbar" class="toolbar mdui-toolbar" :class="{'toolbar-unfloat':isTop,'mdui-toolbar-lifted':!isTop}">
+        <p class="mdui-typo-title">{{name}}</p>
+        <div class="mdui-toolbar-spacer"></div>
+
+        <!-- 菜单区域 -->
+        <template v-for="item in menus" :key="item.title">
+          <a v-if="item.type=='menu'" :href="item.href"
+            class="mdui-btn mdui-ripple mdui-hidden-xs-down"
+            :class="{'mdui-text-color-theme-accent': pathname==item.href }" :targrt="item.target">{{item.title}}</a>
+        </template>
+        <!-- 更多菜单按钮 -->
+        <div class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-sm-up" mdui-menu="{target: '#menu-more'}"
+          mdui-tooltip="{'content':'更多选项'}">
+          <i class="mdui-icon material-icons">more_vert</i>
+        </div>
+        <!-- 弹出菜单 -->
+        <ul class="mdui-menu" id="menu-more">
+          <div>
+            <template v-for="item in menus" :key="item.title">
+              <li v-if="item.type=='menu'" class="mdui-menu-item">
+                <a :href="item.href" class="mdui-ripple" :class="{'mdui-text-color-theme-accent': pathname==item.href }"
+                  :targrt="item.target">{{item.title}}</a>
+              </li>
+              <li v-else-if="item.type=='divider'" class="mdui-divider"></li>
+            </template>
+          </div>
+        </ul>
+      </div>
+    </nav>
+
+    <header>
+      <img class="cover" src="images/top_background.webp" draggable="false" alt />
+      <div id="appInfoSpace" class="appInfoSpace">
+        <img class="app-icon mdui-shadow-4" src="images/aidelua_logo.svg" alt />
+        <h1 class="app-title">{{name}}</h1>
+        <h2 class="app-summary mdui-text-color-theme-secondary">{{description}}</h2>
+
+        <div class="app-goup-btn">
+           <a id="download" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+            href="javascript:show();">
+<!--            
+            :href="appConfig && appConfig.updateurl" target="_blank">
+-->
+            <i class="mdi mdi-download-outline"></i>
+            <span>下载 {{appConfig && `(${appConfig.updateversioncode})`}}</span>
+          </a>
+          <a class="mdui-btn mdui-ripple" href="https://gitee.com/huajicloud/hydrogen" target="_blank">
+            <span class="mdi mdi-source-branch"></span>
+            <span>开源仓库</span>
+          </a>
+        </div>
+
+      </div>
+    </header>
+
+    <hr />
+
+ <div class="screenshots group mdui-container-fluid mdui-row-xs-1 mdui-row-sm-2 mdui-row-md-4">
+   <div>
+     <div 
+       v-for="item in screenshot" 
+       :key="item.id"
+       :style="item.src === 'null' ? 'padding: 0; margin: 0' : ''"  
+       class="screenshot-item mdui-container mdui-col"
+     >
+       <h3 class="title">{{item.title}}</h3>
+       <p class="subtitle mdui-text-color-theme-secondary" v-if="item.summary !== 'null'">{{item.summary}}</p>    
+       <img 
+         class="screenshot mdui-card-outlined" 
+         :src="item.src === 'null' ? '' : item.src" 
+         alt 
+         v-if="item.src !== 'null'"
+       >
+     </div>
+   </div>
+ </div>
+
+    <hr />
+
+    <div class="group mdui-row">
+      <!-- 关于我们板块 -->
+      <div class="subgroup mdui-col-xs-12 mdui-col-md-4">
+        <h3 class="title">关于我们</h1>
+          <div id="developers" class="developers">
+            <div v-for="item in developers" :key="item.name">
+                <img class="avatar mdui-card-outlined" :src="item.avatar" draggable="false" alt />
+                <h4 class="mdui-text-center title">{{item.name}}</h4>
+                <p class="mdui-text-center subtitle mdui-text-color-theme-secondary">{{item.summary}}</p>
+            </div>
+          </div>
+      </div>
+
+      <!-- 联系我们板块 -->
+      <div class="subgroup mdui-col-xs-12 mdui-col-md-4">
+        <h3 class="title">联系我们</h3>
+        <div id="contact"
+          class="item contact bottom-links mdui-row-xs-2 mdui-row-sm-4 mdui-row-md-2 mdui-row-lg-3 mdui-row-xl-4">
+          <div v-for="item in contact" class="mdui-col" :key="item.title">
+            <a class="mdui-btn mdui-btn-outlined mdui-hoverable-4 mdui-ripple" :href="item.href" target="_blank"
+              :mdui-tooltip='JSON.stringify(item.tooltip)'>
+              <i class="mdi" :class="[`mdi-${item.icon}`]"></i>
+              <span>{{item.title}}</span>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 友情链接板块 -->
+      <div class="subgroup mdui-col-xs-12 mdui-col-md-4">
+        <h3 class="title">友情链接</h3>
+        <div id="links"
+          class="item links bottom-links mdui-row-xs-2 mdui-row-sm-4 mdui-row-md-2 mdui-row-lg-4 mdui-row-xl-5">
+          <div v-for="item in links" class="mdui-col" :key="item.name">
+            <a :href="item.href" target="_blank">
+              <div class="mdui-btn mdui-ripple mdui-text-color-theme">{{item.name}}</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>Copyright 2022-2023 Hydrogen. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

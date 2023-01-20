@@ -1,0 +1,53 @@
+@import url(mdui2.css);
+
+*,
+:after,
+:before {
+    box-sizing: border-box;
+}
+
+.mdui-toolbar>.jesse205-toolbar-menusSpace {
+    display: flex;
+}
+
+/* 卡片 */
+
+.jesse205-card-media-covered-dark {
+    color: white;
+    text-shadow: 0 0 5px black;
+}
+
+.jesse205-card-media-covered-light {
+    color: black;
+    text-shadow: 0 0 5px white;
+}
+
+.jesse205-card-media-covered-auto {
+    color: black;
+    text-shadow: 0 0 5px white;
+}
+
+.jesse205-row-xs-1 .jesse205-col,
+.jesse205-row-sm-2 .jesse205-col,
+.jesse205-row-md-2 .jesse205-col {
+    width: 100%;
+}
+
+.jesse205-row-xs-1,
+.jesse205-row-sm-2,
+.jesse205-row-md-2 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media screen and (min-width:600px) {
+    .jesse205-row-sm-2 .jesse205-col {
+        width: 50%;
+    }
+}
+
+@media screen and (min-width:1024px) {
+    .jesse205-row-md-2 .jesse205-col {
+        width: 50%;
+    }
+}

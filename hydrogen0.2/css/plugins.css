@@ -1,0 +1,20 @@
+.cardTitle {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.downloadBtn {
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    margin: 16px;
+}
+
+.spinnerParent {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+}

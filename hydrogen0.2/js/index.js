@@ -96,7 +96,7 @@ var app = createApp({
       screenshot: [
         {
           title: '轻量级体积',
-          summary: '软件体积小,目前仅4.4mb大小', 
+          summary: '软件体积小,目前仅5.6mb大小', 
           src: 'null'
         },
         {

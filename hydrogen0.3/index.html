@@ -1,0 +1,145 @@
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <link crossorigin="" rel="shortcut icon" type="image/x-icon" href="icon.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" property="og:description" content="Hydrogen-一款第三方知乎APP">
+    <meta name="keywords" content="Hydrogen|Hydrogen知乎|氢知乎|Hydrogen官网" />
+
+    <title>Hydrogen下载页</title>
+    <style data-emotion="css" data-s="">
+        :root {
+            --swiper-theme-color: #007aff
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif
+        }
+
+        .mainlay {
+            width: 100vw;
+            height: 100vh;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.09) 74%, rgba(0, 156, 238, 0.3));
+            position: relative;
+        }
+
+        .mytext {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        .views {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+
+        .button {
+            color: rgb(255, 255, 255);
+            background: rgb(15, 136, 235);
+            border-radius: 999999px;
+            font-size: 18px;
+            font-weight: 700;
+            width: 240px;
+            height: 42px;
+            border: none;
+            margin-left: -120px;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            z-index: 1;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        <div class="mainlay">
+            <div class="views">
+
+                <div class="mytext">
+                    <div>Hydrogen 一款第三方知乎APP</div>
+                </div>
+
+
+                <div class="button" onclick="downAndroid()">下载 安卓 App</div>
+                <div class="button" onclick="downiOS()">下载 iOS App</div>
+                <div class="button" onclick="downOH()">下载 鸿蒙 App</div>
+                <div class="button" onclick="viewurl()">查看安卓版源码</div>
+                <div class="button" onclick="viewOH()">查看iOS/鸿蒙版源码</div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function download(downurl, name) {
+            const a = document.createElement('a');
+            a.setAttribute('href', downurl);
+            a.click();
+        }
+
+        function downAndroid() {
+
+            // 创建 XHR 对象
+            const xhr = new XMLHttpRequest();
+
+            // 设置请求方法和 URL
+            xhr.open('GET', 'https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45');
+
+            // 发送请求
+            xhr.send();
+
+            // 请求加载完成,处理响应
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // 解析响应内容
+                    var downjson = JSON.parse(xhr.responseText)
+                    var downcontent = atob(downjson.content)
+                    var downurl = downcontent.match(/updateurl=(\S*),updateurl/)[1]
+                    download(downurl)
+                }
+            }
+
+            // 请求错误处理
+            xhr.onerror = function () {
+                console.log('Request Error...');
+            }
+        }
+
+        function downiOS() {
+            alert("敬请期待")
+        }
+
+        function downOH() {
+            alert("敬请期待")
+        }
+
+        function viewurl() {
+            window.location.href = "https://gitee.com/huajicloud/hydrogen"
+        }
+
+        function viewOH() {
+            alert("敬请期待")
+        }
+
+    </script>
+
+</body>
+
+</html>

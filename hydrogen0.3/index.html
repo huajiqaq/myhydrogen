@@ -15,17 +15,13 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif
-        }
-
-        .mainlay {
-            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             height: 100vh;
+            margin: 0;
             background-image: linear-gradient(rgba(255, 255, 255, 0.09) 74%, rgba(0, 156, 238, 0.3));
-            position: relative;
         }
 
         .mytext {
@@ -33,16 +29,6 @@
             font-weight: 300;
             margin-bottom: 22px;
             text-align: center;
-        }
-
-        .views {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
         }
 
         .button {
@@ -62,29 +48,20 @@
             justify-content: center;
             z-index: 1;
             margin: 10px 0;
+            cursor: pointer
+        }
+
+        .button:hover {
+            background-color: #1976D2;
         }
     </style>
 </head>
 
 <body>
-    <div id="root">
-        <div class="mainlay">
-            <div class="views">
-
-                <div class="mytext">
-                    <div>Hydrogen 一款第三方知乎APP</div>
-                </div>
-
-
-                <div class="button" onclick="downAndroid()">下载 安卓 App</div>
-                <div class="button" onclick="downiOS()">下载 iOS App</div>
-                <div class="button" onclick="downOH()">下载 鸿蒙 App</div>
-                <div class="button" onclick="viewurl()">查看安卓版源码</div>
-                <div class="button" onclick="viewOH()">查看iOS/鸿蒙版源码</div>
-
-            </div>
-        </div>
-    </div>
+    <p class="mytext">Hydrogen 一款第三方知乎APP</p>
+    <button class="button" onclick="downAndroid()">下载App</button>
+    <button class="button" onclick="viewAppurl()">查看App源码</button>
+    <button class="button" onclick="viewWeburl()">查看网页源码</button>
 
     <script>
 
@@ -122,20 +99,11 @@
             }
         }
 
-        function downiOS() {
-            alert("敬请期待")
-        }
-
-        function downOH() {
-            alert("敬请期待")
-        }
-
-        function viewurl() {
+        function viewAppurl() {
             window.location.href = "https://gitee.com/huajicloud/hydrogen"
         }
-
-        function viewOH() {
-            alert("敬请期待")
+        function viewWeburl() {
+            window.location.href = "https://gitee.com/myhydrogen/myhydrogen/blob/master/hydrogen0.3/index.html"
         }
 
     </script>

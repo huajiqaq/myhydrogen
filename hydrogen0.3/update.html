@@ -223,7 +223,6 @@
             downloadBtn.className = 'download-btn';
             downloadBtn.textContent = '下载';
             downloadBtn.href = update.downloadLink;
-            downloadBtn.target = '_blank';
 
             div.appendChild(date);
             div.appendChild(version);
@@ -258,7 +257,7 @@
 
         const scrollfunc = () => {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 50) { // 减去50是为了提前加载
+            if (scrollTop + clientHeight >= scrollHeight - 150) { // 减去150是为了提前加载
                 loadUpdates();
             }
         }

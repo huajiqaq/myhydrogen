@@ -12,6 +12,7 @@
             background-color: #f5f5f5;
             margin: 0;
             padding: 20px;
+            min-height: 100vh
         }
 
         .container {
@@ -177,7 +178,7 @@
 
                         await additem({
                             date: commitData.time,
-                            version: result.updateversionname + result.updateversioncode,
+                            version: result.updateversionname + " " + result.updateversioncode,
                             changes: result.updateinfo,
                             downloadLink: result.updateurl
                         })
@@ -240,7 +241,7 @@
             return decodeURIComponent(escape(window.atob(str)));
         }
 
-        const batchSize = 3;
+        const batchSize = 5;
 
         async function loadUpdates() {
             if (canload == false) return

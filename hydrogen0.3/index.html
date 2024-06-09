@@ -60,6 +60,7 @@
 <body>
     <p class="mytext">Hydrogen 一款第三方知乎APP</p>
     <button class="button" onclick="downAndroid()">下载App</button>
+    <button class="button" onclick="viewUpdate()">查看更新日志</button>
     <button class="button" onclick="viewAppurl()">查看App源码</button>
     <button class="button" onclick="viewWeburl()">查看网页源码</button>
 
@@ -99,11 +100,15 @@
             }
         }
 
+        function viewUpdate() {
+            window.location.href = "https://huajiqaq.github.io/myhydrogen/update.html"
+        }
+
         function viewAppurl() {
             window.location.href = "https://gitee.com/huajicloud/hydrogen"
         }
         function viewWeburl() {
-            window.location.href = "https://gitee.com/myhydrogen/myhydrogen/blob/master/hydrogen0.3/index.html"
+            window.location.href = "https://github.com/huajiqaq/myhydrogen/tree/master/hydrogen0.3"
         }
 
     </script>

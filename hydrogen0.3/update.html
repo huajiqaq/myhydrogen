@@ -109,9 +109,14 @@
         let filePath = 'zhihu_hydrogen.html';
 
         let currentPage = 0
+        let Version = 0
+
+        const loader = document.getElementById('loader');
+        loader.style.display = 'block';
+        document.getElementById('loader').innerText = "下拉加载更多内容"
+
 
         async function fetchCommits() {
-            const loader = document.getElementById('loader');
 
             try {
                 // 如果已经存在，使用第一个，否则进行新的请求
@@ -153,13 +158,13 @@
         }
 
         async function fetchCommitContent(pageSize) {
-            const loader = document.getElementById('loader');
-            loader.style.display = 'block';
+
+            document.getElementById('loader').innerText = "加载中..."
 
             async function loaddata() {
                 const commitData = await fetchCommits()
                 if (commitData == false) {
-                    return false
+                    return true
                 }
                 try {
                     const response = await fetch(`https://gitee.com/api/v5/repos/${repoOwner}/${repoName}/contents/${filePath}?access_token=${accessToken}&ref=${commitData.sha}`);
@@ -176,12 +181,18 @@
                             result[match.groups.firstProp] = val;
                         }
 
-                        await additem({
-                            date: commitData.time,
-                            version: result.updateversionname + " " + result.updateversioncode,
-                            changes: result.updateinfo,
-                            downloadLink: result.updateurl
-                        })
+                        let date = commitData.time
+                        let version = result.updateversionname + " " + result.updateversioncode
+                        let changes = result.updateinfo
+                        let downloadLink = result.updateurl
+
+                        if (date && version && changes && downloadLink && version != Version) {
+                            Version = version
+                        } else {
+                            return false
+                        }
+
+                        await additem({ date, version, changes, downloadLink })
 
                     } else {
                         console.error('Error fetching commit content:', data);
@@ -192,11 +203,18 @@
                 }
             }
 
+            let result
             for (let index = 0; index < pageSize; index++) {
-                await loaddata()
+                result = await loaddata()
             }
 
-            loader.style.display = 'none';
+            if (result == true) {
+                document.getElementById('loader').innerText = "没有更多内容了"
+            } else {
+                document.getElementById('loader').innerText = "下拉加载更多内容"
+            }
+
+
 
         }
 
@@ -246,8 +264,6 @@
         async function loadUpdates() {
             if (canload == false) return
             canload = false
-            const loader = document.getElementById('loader');
-            loader.style.display = 'block';
             await fetchCommitContent(batchSize)
             canload = true
         }

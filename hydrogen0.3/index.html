@@ -1,5 +1,7 @@
 <html lang="zh">
 
+</html>
+
 <head>
     <meta charset="utf-8">
     <link crossorigin="" rel="shortcut icon" type="image/x-icon" href="icon.png">
@@ -63,6 +65,8 @@
     <button class="button" onclick="viewUpdate()">查看更新日志</button>
     <button class="button" onclick="viewAppurl()">查看App源码</button>
     <button class="button" onclick="viewWeburl()">查看网页源码</button>
+    <button class="button" onclick="viewWeb()">浏览网页端(Beta)</button>
+
 
     <script>
 
@@ -107,8 +111,13 @@
         function viewAppurl() {
             window.location.href = "https://gitee.com/huajicloud/hydrogen"
         }
+
         function viewWeburl() {
             window.location.href = "https://github.com/huajiqaq/myhydrogen/tree/master/hydrogen0.3"
+        }
+
+        function viewWeb() {
+            window.location.href = "https://huajiqaq.github.io/zhihu_web"
         }
 
     </script>

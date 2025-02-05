@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hydrogen更新日志</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <style>
@@ -11,7 +12,7 @@
             background-color: #f5f5f5;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
+            min-height: 100vh
         }
 
         .container {
@@ -53,6 +54,7 @@
         .version {
             font-weight: 400;
             margin-bottom: 5px;
+            /* 防止过长 */
             word-break: break-all;
         }
 
@@ -68,7 +70,8 @@
             text-decoration: none;
             border-radius: 8px;
             cursor: pointer;
-            flex-shrink: 0;
+            /* 防止空间不足时缩小 */
+            flex-shrink: 0
         }
 
         .download-btn:hover {
@@ -76,6 +79,7 @@
         }
 
         #loader {
+            display: none;
             text-align: center;
             padding: 20px;
             color: #666;
@@ -88,132 +92,194 @@
 <body>
     <div class="container">
         <h1>更新日志</h1>
-        <ul id="update-log"></ul>
-        <div id="loader">加载中...</div>
+        <ul id="update-log">
+            <!-- 更新日志内容将在这里动态加载 -->
+        </ul>
+        <div id="loader" style="display: none; text-align: center; padding: 20px;">
+            加载中...
+        </div>
     </div>
 
     <script>
+
+        let commitDatas = []
         const accessToken = 'abd6732c1c009c3912cbfc683e10dc45';
         const repoOwner = 'huaji110';
         const repoName = 'huajicloud';
-        let filePaths = ['zhihu_hydrogen.html', 'hydrogen.html'];
-        let currentPage = 0;
-        let currentFilePathIndex = 0;
-        let Version = '';
-        let commitDatas = [];
-        const batchSize = 5;
-        const updateLogElement = document.getElementById('update-log');
-        const loaderElement = document.getElementById('loader');
+        let filePath = 'zhihu_hydrogen.html';
 
-        const fetchJson = async (url) => {
+        let currentPage = 0
+        let Version = 0
+
+        const loader = document.getElementById('loader');
+        loader.style.display = 'block';
+        document.getElementById('loader').innerText = "下拉加载更多内容"
+
+
+        async function fetchCommits() {
+
             try {
-                const response = await fetch(url);
-                return response.json();
-            } catch (error) {
-                console.error('Error fetching JSON:', error);
-                return null;
-            }
-        };
+                // 如果已经存在，使用第一个，否则进行新的请求
+                let commitData = commitDatas.length > 0 ? commitDatas[0] : null;
+                if (!commitData) {
+                    currentPage++
+                    const response = await fetch(`https://gitee.com/api/v5/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&path=${filePath}&page=${currentPage}`);
+                    const data = await response.json();
 
-        const b64ToUtf8 = (str) => decodeURIComponent(escape(window.atob(str)));
-
-        const createUpdateItem = ({ date, version, changes, downloadLink }) => `
-            <li>
-                <div>
-                    <div class="date">${date}</div>
-                    <div class="version">${version}</div>
-                    <p class="update">${changes}</p>
-                </div>
-                <a class="download-btn" href="${downloadLink}" target="_blank">下载</a>
-            </li>
-        `;
-
-        const addItems = (updates) => {
-            updates.forEach(update => {
-                const itemHtml = createUpdateItem(update);
-                updateLogElement.insertAdjacentHTML('beforeend', itemHtml);
-            });
-        };
-
-        const parseContent = (content) => {
-            const regex = /(\w+)=(.+?),/g;
-            let match;
-            const result = {};
-            while ((match = regex.exec(content)) !== null) {
-                result[match[1]] = match[2].replace(/\r\n/g, '');
-            }
-            return result;
-        };
-
-        const fetchCommitContent = async () => {
-            loaderElement.innerText = "加载中...";
-            if (!commitDatas.length) {
-                currentPage++;
-                const url = `https://gitee.com/api/v5/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&path=${filePaths[currentFilePathIndex]}&page=${currentPage}`;
-                const commits = await fetchJson(url);
-
-                if (!commits || commits.length === 0) {
-                    if (currentFilePathIndex + 1 < filePaths.length) {
-                        currentFilePathIndex++;
-                        currentPage = 0;
-                        commitDatas = [];
+                    if (response.ok) {
+                        if (data.length == 0) {
+                            if (filePath == "zhihu_hydrogen.html") {
+                                filePath = "hydrogen.html"
+                                currentPage = 0
+                                commitDatas = []
+                            } else {
+                                window.removeEventListener('scroll', scrollfunc)
+                            }
+                            return false
+                        }
+                        // 添加到数组中
+                        commitDatas = data.map(commit => ({ time: new Date(commit.commit.committer.date).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }), sha: commit.sha }));
+                        commitData = commitDatas[0]; // 获取第一个
                     } else {
-                        window.removeEventListener('scroll', scrollFunc);
-                        loaderElement.innerText = "没有更多内容了";
-                        return;
+                        console.log('No more commits to load.');
+                        return false; // 如果没有更多的提交，直接返回
                     }
-                } else {
-                    commitDatas.push(...commits.map(commit => ({
-                        time: new Date(commit.commit.committer.date).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }),
-                        sha: commit.sha
-                    })));
+                }
+
+                if (commitData) {
+                    commitDatas.shift();
+                    // 如果已经获取到了第一个元素，直接返回
+                    return commitData;
+                }
+            } catch (error) {
+                console.error('Error fetching commits:', error);
+            } finally {
+            }
+        }
+
+        async function fetchCommitContent(pageSize) {
+
+            document.getElementById('loader').innerText = "加载中..."
+
+            async function loaddata() {
+                const commitData = await fetchCommits()
+                if (commitData == false) {
+                    return true
+                }
+                try {
+                    const response = await fetch(`https://gitee.com/api/v5/repos/${repoOwner}/${repoName}/contents/${filePath}?access_token=${accessToken}&ref=${commitData.sha}`);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        const content = b64_to_utf8(data.content); // base64 解码
+
+                        let re = /(?<firstProp>[a-z]+)=(?<val>[^,]+),(?<secondProp>[a-z]+)/g;
+                        let result = {};
+                        while ((match = re.exec(content)) != null) {
+                            let val = match.groups.val;
+                            val = val.replace(/\r\n/g, '');
+                            result[match.groups.firstProp] = val;
+                        }
+
+                        let date = commitData.time
+                        let version = result.updateversionname + " " + result.updateversioncode
+                        let changes = result.updateinfo
+                        let downloadLink = result.updateurl
+
+                        if (date && version && changes && downloadLink && version != Version) {
+                            Version = version
+                        } else {
+                            return false
+                        }
+
+                        await additem({ date, version, changes, downloadLink })
+
+                    } else {
+                        console.error('Error fetching commit content:', data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching commit content:', error);
+                } finally {
                 }
             }
 
-            const updates = [];
-            for (let i = 0; i < batchSize && commitDatas.length; i++) {
-                const commitData = commitDatas.shift();
-                const contentUrl = `https://gitee.com/api/v5/repos/${repoOwner}/${repoName}/contents/${filePaths[currentFilePathIndex]}?access_token=${accessToken}&ref=${commitData.sha}`;
-                const data = await fetchJson(contentUrl);
-                if (!data) continue;
-
-                const content = b64ToUtf8(data.content);
-
-                const result = parseContent(content);
-
-                const date = commitData.time;
-                const version = `${result.updateversionname} ${result.updateversioncode}`;
-                const changes = result.updateinfo;
-                const downloadLink = result.updateurl;
-
-                if (date && version && changes && downloadLink && version !== Version) {
-                    Version = version;
-                    updates.push({ date, version, changes, downloadLink });
-                }
+            let result
+            for (let index = 0; index < pageSize; index++) {
+                result = await loaddata()
             }
 
-            addItems(updates);
-            loaderElement.innerText = updates.length ? "拉动加载更多内容" : "没有更多内容了";
+            if (result == true) {
+                document.getElementById('loader').innerText = "没有更多内容了"
+            } else {
+                document.getElementById('loader').innerText = "下拉加载更多内容"
+            }
+
+
+
         }
 
 
-        let canload = true
-        const loadUpdates = async () => {
+
+        async function additem(update) {
+            const li = document.createElement('li');
+            const div = document.createElement('div');
+            const date = document.createElement('div');
+            const version = document.createElement('div');
+            const changes = document.createElement('ul');
+            const downloadBtn = document.createElement('a');
+            const updateLog = document.getElementById('update-log');
+
+            date.className = 'date';
+            date.textContent = update.date;
+            version.className = 'version';
+            version.textContent = update.version;
+
+            const changeItem = document.createElement('p');
+            changeItem.className = 'update';
+            changeItem.textContent = update.changes;
+            changes.appendChild(changeItem);
+
+            downloadBtn.className = 'download-btn';
+            downloadBtn.textContent = '下载';
+            downloadBtn.href = update.downloadLink;
+
+            div.appendChild(date);
+            div.appendChild(version);
+            div.appendChild(changes);
+            li.appendChild(div);
+            li.appendChild(downloadBtn);
+            updateLog.appendChild(li);
+        }
+
+        function utf8_to_b64(str) {
+            return window.btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function b64_to_utf8(str) {
+            return decodeURIComponent(escape(window.atob(str)));
+        }
+
+        const batchSize = 5;
+
+        async function loadUpdates() {
             if (canload == false) return
             canload = false
-            await fetchCommitContent()
+            await fetchCommitContent(batchSize)
             canload = true
-        };
+        }
 
-        const scrollFunc = () => {
+        let canload = true
+
+        loadUpdates();
+
+        const scrollfunc = () => {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 150) {
+            if (scrollTop + clientHeight >= scrollHeight - 150) { // 减去150是为了提前加载
                 loadUpdates();
             }
-        };
-
-        window.addEventListener('scroll', scrollFunc);
-        loadUpdates();
+        }
+        // 懒加载：当用户滚动到页面底部时加载更多数据
+        window.addEventListener('scroll', scrollfunc)
     </script>
 </body>
 
